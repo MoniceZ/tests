@@ -1,0 +1,71 @@
+from scipy import optimize 
+import numpy as np
+
+def Sn(j, s, t, p):
+      sj = (1+j)*(((1+j)**t)-1)/(j*p)
+      err = np.abs(sj - s)
+      return err
+
+print(' Digite as informações que você quer: ')
+print('\n Usar a seguinte formação para números: ponto(.) para decimais')
+print('\n Exemplo: 234.56')
+print('\n Digite 0 no valor que você quer receber \n')
+
+while True:
+
+  j = float(input('\n Digite aqui a taxa de juros (a.a.):   '))
+  s = float(input('\n Digite aqui o valor que você quer acumular no final:   '))
+  t = float(input('\n Digite aqui quantas parcelas serão (meses):   '))
+  p = float(input('\n Digite aqui o valor das parcelas: '))
+
+  if (j>0) and (t>0) and (p>0) and (s==0):
+    
+    j = j/12
+    x1 = 1+(j/100)
+    x2 = ((1+(j/100))**t)-1
+    x3 = (x2/j)
+
+    s = x1*x3*p
+
+    print(f'\n A valor final será R$ {s*100:,.2f} reais')
+    break
+
+  elif (j>0) and (t>0) and (p==0) and (s>0):
+    
+    j = j/12
+    x1 = 1+(j/100)
+    x2 = ((1+(j/100))**t)-1
+    x3 = (x2/j)
+
+    p = s/x1
+    p = p/x3
+
+    print(f'\n A valor da parcela será R$ {p/100:,.2f} reais')
+    break
+
+  elif (j==0) and (t>0) and (p>0) and (s>0):
+    j = 1
+    j = optimize.minimize(Sn, j, method='nelder-mead', args=(s,t,p), tol= 1e-6, options={'disp': False})
+    print(f'\n O valor da taxa de juros será {j.x[0]*12:,.2f} % (a.a.)')
+    break
+
+  elif (j>0) and (t==0) and (p>0) and (s>0):
+    j = j/12
+    j = j/100
+    x1 = (1+j)
+    x2 = s/p
+    x3 = x2/x1
+    x4 = x3*j
+    x5 = x4+1
+
+    x6 = np.log(x5)
+    x7 = np.log(x1)
+
+    t = x6/x7
+
+    print(f'\n\n Terá que economizar por {t:,.0f} meses')
+    break
+
+  else:
+    print('\n Digite as informações da forma solicitada \n')
+    pass
